@@ -90,21 +90,19 @@ export async function POST(req: Request) {
           from: process.env.CLIENT_EMAIL,
           to: [event.data.object.customer_details.email],
           subject: "Thanks for your order!",
-          html: String(
-            OrderReceivedEmail({
-              orderId,
-              orderDate: updatedOrder.createdAt.toLocaleDateString(),
-              // @ts-ignore
-              shippingAddress: {
-                name: session.customer_details!.name!,
-                city: shippingAddress!.city!,
-                country: shippingAddress!.country!,
-                postalCode: shippingAddress!.postal_code!,
-                street: shippingAddress!.line1!,
-                state: shippingAddress!.state,
-              },
-            })
-          ),
+          html: OrderReceivedEmail({
+            orderId,
+            orderDate: updatedOrder.createdAt.toLocaleDateString(),
+            // @ts-ignore
+            shippingAddress: {
+              name: session.customer_details!.name!,
+              city: shippingAddress!.city!,
+              country: shippingAddress!.country!,
+              postalCode: shippingAddress!.postal_code!,
+              street: shippingAddress!.line1!,
+              state: shippingAddress!.state,
+            },
+          }),
         });
         // await resend.emails.send({
         //   from: `CaseCobra <${process.env.RESEND_EMAIL}>`,
