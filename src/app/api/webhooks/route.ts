@@ -75,24 +75,29 @@ export async function POST(req: Request) {
       });
       console.log("sending_email", event.data.object.customer_details.email);
 
-      await resend.emails.send({
-        from: `CaseCobra <${process.env.RESEND_EMAIL}>`,
-        to: [event.data.object.customer_details.email],
-        subject: "Thanks for your order!",
-        react: OrderReceivedEmail({
-          orderId,
-          orderDate: updatedOrder.createdAt.toLocaleDateString(),
-          // @ts-ignore
-          shippingAddress: {
-            name: session.customer_details!.name!,
-            city: shippingAddress!.city!,
-            country: shippingAddress!.country!,
-            postalCode: shippingAddress!.postal_code!,
-            street: shippingAddress!.line1!,
-            state: shippingAddress!.state,
-          },
-        }),
-      });
+      try {
+        await resend.emails.send({
+          from: `CaseCobra <${process.env.RESEND_EMAIL}>`,
+          to: [event.data.object.customer_details.email],
+          subject: "Thanks for your order!",
+          react: OrderReceivedEmail({
+            orderId,
+            orderDate: updatedOrder.createdAt.toLocaleDateString(),
+            // @ts-ignore
+            shippingAddress: {
+              name: session.customer_details!.name!,
+              city: shippingAddress!.city!,
+              country: shippingAddress!.country!,
+              postalCode: shippingAddress!.postal_code!,
+              street: shippingAddress!.line1!,
+              state: shippingAddress!.state,
+            },
+          }),
+        });
+        console.log("email sent");
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     return NextResponse.json({ result: event, ok: true });
